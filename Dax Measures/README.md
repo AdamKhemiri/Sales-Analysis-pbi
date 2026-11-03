@@ -1,54 +1,91 @@
 # Sales DAX documentation
 
-`Measures.DAX` is preserved byte-for-byte from the supplied repository. It documents existing exported expressions; it is not a complete, tested import script. It mixes `[Name] :=` notation with `Name =` definitions.
+[Measures.DAX](Measures.DAX) contains the measure definitions supplied from the Sales Analysis Power BI model, grouped by reporting purpose.
 
-## Dependencies to reconcile against Power BI
+The `M_` prefix is the project's measure-naming convention. The file presents individual Power BI measure definitions for reference.
 
-- M_Net Sales references `[Gross Sales]` and `[Discounts]`, although this export defines M_Gross Sales and M_Discounts.
-- M_Profit references `[Net Sales]` and `[COGS]`, which are not defined here.
-- The first margin definition has a trailing space in `[M_Profit Margin ]`, while later references omit it.
-- The diagram includes M_Date Selection and M_Transparent; the export omits the former and instead includes `[Transparent] := 0` for the latter concept. Do not assume numeric zero means transparent color.
-- Full Power Query steps and Year Rank generation are absent.
+## Core measures
 
-These findings establish an incomplete/inconsistent export, not that the published report necessarily uses broken formulas. Re-export the actual measures before changing the model.
+| Measure | Definition |
+|---|---|
+| `M_Gross Sales` | Sum of `FACT_SALES[Gross Sales]`. |
+| `M_Discounts` | Sum of `FACT_SALES[Discounts]`. |
+| `M_Net Sales` | Sum of `FACT_SALES[Sales]`, the sales-after-discounts field. |
+| `M_Cost Of Goods` | Sum of `FACT_SALES[COGs]`. |
+| `M_Profit` | Net sales minus cost of goods. |
+| `M_Profit Margin` | Profit divided by net sales, with an error fallback of zero. |
+| `M_Units Sold` | Sum of `FACT_SALES[Units Sold]`. |
 
-## Proposed core cleanup — not implemented or tested
+Profit in this report means net sales minus cost of goods. Operating expenses and tax are outside this calculation.
 
-After verifying model names and dependencies, consistent definitions could be:
+## Coverage measures
 
-```dax
-M_Net Sales = [M_Gross Sales] - [M_Discounts]
-M_Profit = [M_Net Sales] - [M_Cost Of Goods]
-M_Profit Margin = DIVIDE([M_Profit], [M_Net Sales])
-```
-
-These are individual measure definitions, not a bulk import script. The proposed margin returns blank for an undefined denominator rather than presenting an error as zero. Confirm this business rule before implementation and recheck dependent visuals.
+| Measure | Definition |
+|---|---|
+| `M_# of Distinct Countries` | Distinct countries in the current filter context. |
+| `M_# of Distinct Segments` | Distinct customer segments in the current filter context. |
 
 ## Time comparison
 
-The existing profit YoY measure selects ranked years, removes the Year filter, uses ABS(PY), and returns 100% on error. It does not explicitly restrict the comparison to months present in both years. The report covers September 2021–December 2022, so the displayed 236% should not be used as matched-period growth.
+| Measure | Definition |
+|---|---|
+| `M_Profit CY` | Profit filtered to `DIM_DATE[Year Rank] = "1"`. |
+| `M_Profit PY` | Profit filtered to `DIM_DATE[Year Rank] = "2"`. |
+| `M_Units Sold CY` | Units sold filtered to year rank `"1"`. |
+| `M_Units Sold PY` | Units sold filtered to year rank `"2"`. |
+| `M_Profit YOY%` | Difference between current- and prior-year profit, divided by the absolute value of prior-year profit, with the filter on `DIM_DATE[Year]` removed. |
 
-First compare September–December 2022 against September–December 2021. Validate both profit totals against the source and document the denominator convention, especially if prior profit is negative. Return blank or an explicit not-comparable label when prior profit is zero/missing. A model-specific replacement cannot be certified without confirming the date dimension and rank logic.
+The dataset covers September 2021–December 2022. Because the full dataset contains four months of 2021 and twelve months of 2022, the case study does not present the full-period comparison as like-for-like annual growth.
+
+The current YoY expression uses an `IFERROR` fallback of `1`. If an error is caught, this value displays as 100%; it is a fallback rather than a calculated growth result.
+
+See the [validation notes](../Docs/Validation.md) for the scope of the recorded checks.
 
 ## Presentation helpers
 
-The supplied export includes the following helpers. Their expressions are retained in Measures.DAX.
-
-| Helper | Purpose / expression |
+| Measure | Purpose |
 |---|---|
-| Transparent | `[Transparent] := 0`; numeric helper. The export does not identify its visual-property binding. |
-| M_Welcome_All | White (`#fff`) when no single manager ID is selected; transparent RGBA color otherwise. |
-| M_User Greeting | Welcome text using the selected manager's first name. |
-| M_User Greeting Help | Help text using the selected manager's first name. |
-| Date/Time Last Refreshed | MAX refresh date. |
-| M_Date/Time Last Refreshed | Refresh date formatted as `Last Refreshed: mm.dd.yy`. |
-| M_Profit Margin Formatted | Percentage label with a plus sign for positive margins. |
-| M_Profit YOY% Formatted | Percentage label prefixed with `YOY: `. |
-| M_Discount Band Colors | Color mapping for High, Medium, Low, None, and default selection. |
-| M_100% Minus Profit Margin | Complement used alongside margin in the report's display. |
+| `M_Date Selection` | Formats the minimum and maximum selected reporting dates as `MMM/YY - MMM/YY`. |
+| `M_Date/Time Last Refreshed` | Displays the refresh value as `Last Refreshed: mm.dd.yy`. |
+| `M_Transparent` | Returns `RGBA(255,255,255,0)` for transparent formatting. |
+| `M_Welcome_All` | Returns white when the selected manager ID resolves to blank; otherwise returns a transparent color. |
+| `M_User Greeting` | Builds the welcome message using the selected manager's first name. |
+| `M_User Greeting Help` | Builds the help message using the selected manager's first name. |
+| `M_Profit Margin Formatted` | Displays margin as a whole percentage, with a plus sign for positive values. |
+| `M_Profit YOY% Formatted` | Displays the formatted comparison percentage with a `YOY: ` prefix. |
+| `M_Discount Band Colors` | Assigns colors to discount-band selections. |
+| `M_100% Minus Profit Margin` | Calculates one minus profit margin for report presentation, with an error fallback of zero. |
 
-**M_Date Selection** is present in the model diagram and the live reporting-period label. The supplied Sales DAX file does not include its formula. **M_Transparent** also appears in the diagram, while the file names the zero-valued helper **Transparent**. These are documentation gaps to reconcile, not grounds to remove the features from the project description.
+### Discount-band colors
 
-The Airline file's M_Date Selection references Calendar[Date]. That is not the Sales date table, so copying it here would introduce an incorrect dependency. Obtain the Sales expression from its model before adding executable code under that name.
+| Selection | Color |
+|---|---|
+| High | `#e92f42` |
+| Medium | `#ffbe0b` |
+| Low | `#049570` |
+| None | `#808080` |
+| Default | `#07345F` |
 
-The single-manager greeting has no explicit All/multiple-selection fallback. Refresh formatting assumes VALUES returns one value. Formatted margins are text for display; numeric measures remain appropriate for calculations and sorting.
+### Display behavior
+
+- Formatted percentage measures return text. The underlying numeric measures support calculations.
+- Manager greetings use `SELECTEDVALUE` to retrieve a first name. They do not define a separate greeting for multiple or no selected first names.
+- The refresh label uses `VALUES` and expects a single distinct refresh value in the current context.
+
+## Model dependencies
+
+| Table | Fields referenced by the measures |
+|---|---|
+| `FACT_SALES` | Gross Sales, Discounts, Sales, COGs, Units Sold, Country, Segment, Discount Band |
+| `DIM_DATE` | Reporting Period, Year, Year Rank |
+| `DIM_MANAGERS` | Manager ID, First Name |
+| `LAST_REFRESHED` | Date Last Refreshed |
+
+The DAX file documents measure expressions. Table relationships, Power Query transformations, and date-table generation are separate parts of the Power BI model.
+
+## Related documentation
+
+- [Project overview](../README.md)
+- [Data dictionary](../Data_Dictionary.md)
+- [Model explanation](../Model/README.md)
+- [Validation notes](../Docs/Validation.md)

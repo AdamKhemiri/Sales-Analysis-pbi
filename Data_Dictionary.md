@@ -1,84 +1,177 @@
 # Sales data dictionary
 
-Field and measure definitions for the Sales report. Source screenshots, the model diagram, and the supplied DAX are the reference materials. Remaining source and model checks are listed in Docs/Validation.md.
+Field and measure definitions for the Sales Analysis Power BI report.
+
+The report analyzes sales, discounts, cost of goods, profit, and units sold across reporting periods, customer segments, countries, products, and managers.
+
+[Project overview](README.md) · [DAX documentation](Dax%20Measures/README.md) · [Model explanation](Model/README.md) · [Validation notes](Docs/Validation.md)
 
 ## FACT_SALES
 
-Apparent grain: a summarized sales record by reporting month, segment, country, product, discount band, and manager assignment. Uniqueness of that combination is untested. No visible order identifier supports the former “order line” description.
+The sales table contains source sales records and the attributes used to group and filter reporting results.
 
-| Field | Meaning and status |
+The available documentation indicates summarized sales records rather than individual orders. Uniqueness at a specific combination of month, segment, country, product, discount band, and manager has not been established.
+
+| Field | Definition |
 |---|---|
-| Segment / Segment Short Name | Customer segment and model display abbreviation. |
-| Country / Country Short Name | Country and display abbreviation. |
-| Product / Product Name (Short) | Product label and shortened display label. |
-| Manager ID | Relationship key to the manager dimension; unmatched keys not yet checked. |
-| Discount Band / Discount Band ID | Discount category and model category identifier; thresholds not supplied. |
+| Segment / Segment Short Name | Customer segment and its shortened display label. |
+| Country / Country Short Name | Country and its shortened display label. |
+| Product / Product Name (Short) | Product and its shortened display label. |
+| Manager ID | Manager identifier used to associate sales records with the manager dimension. |
+| Discount Band / Discount Band ID | Discount category and its identifier. |
 | Units Sold | Quantity sold. |
-| Sale Price (source); Sales Price (model) | Unit price before the separately deducted Discounts, based on visible source-row arithmetic. Confirm the source-to-model rename. |
-| Manufacturing Price | Product manufacturing-price attribute supplied in the source; distinct from the recorded COGs amount. |
-| Gross Sales | Sales amount before discounts: Units Sold × Sale Price in the source examples. |
-| Discounts | Monetary discount amount, not percentage. |
-| Sales | Sales after discounts: Gross Sales − Discounts. |
-| COGS (source); COGs (model) | Source-provided cost of goods amount. Underlying costing method not supplied. |
-| Profit | Source profit amount: Sales − COGS. |
-| Date, Month Number, Month Name, Year | Visible source period fields. Do not assume they all remain in the final fact table. |
-| YearMonth | Model period key. Confirm its exact format and type from the PBIX. |
+| Sale Price (source) / Sales Price (model) | Unit selling-price field. The source examples show the price before separately recorded discounts. |
+| Manufacturing Price | Manufacturing-price attribute supplied in the source, distinct from the recorded cost-of-goods amount. |
+| Gross Sales | Sales amount before discounts. Source examples calculate this as units sold multiplied by sale price. |
+| Discounts | Monetary discount amount. |
+| Sales | Sales amount after discounts. This field is summed by `M_Net Sales`. |
+| COGS (source) / COGs (model) | Recorded cost-of-goods amount. The measure expressions reference `FACT_SALES[COGs]`. |
+| Profit | Source profit amount, calculated as sales after discounts minus cost of goods. |
+| YearMonth | Period key used in the model. |
 
-Net Sales is a measure concept; the supplied diagram does not show a separate Net Sales fact column. Source files already contain monetary calculations. Dollar formatting does not establish currency code.
+The source also includes Date, Month Number, Month Name, and Year fields. Their presence in the source does not establish that every field is retained in the final sales table.
+
+### Financial definitions
+
+- **Gross sales:** sales before discounts.
+- **Net sales:** sales after discounts, represented by `FACT_SALES[Sales]`.
+- **Profit:** net sales minus cost of goods.
+- **Profit margin:** profit divided by net sales.
+
+The report's profit calculation does not include operating expenses or tax.
+
+`M_Net Sales` is a measure. Its expression does not depend on a separate fact-table column named Net Sales.
+
+Amounts are displayed with a dollar symbol. A specific currency code is not established by formatting alone.
 
 ## DIM_DATE
 
-| Field | Meaning |
-|---|---|
-| Reporting Period | Reporting month, e.g. September 2021; shown as a date field in the model. |
-| Month (Short), Month Name, Month Number | Month labels and sorting attributes. |
-| Quarter | Calendar quarter (1–4). |
-| Year | Calendar year. |
-| Year Rank | Exported DAX uses text values "1" for CY and "2" for PY. Rank-generation logic is not supplied. |
-| YearMonth | Apparent month join key; confirm uniqueness and relationship endpoints. |
+The report author created the date table using the minimum and maximum dates. It provides reporting-period labels and attributes for filtering and time comparisons.
 
-The diagram suggests a month-oriented dimension. A continuous daily date table has not been demonstrated.
+The dataset covers September 2021–December 2022.
+
+| Field | Definition |
+|---|---|
+| Reporting Period | Date field used for reporting-period selection and date-range labels. |
+| Month (Short) | Abbreviated month label with a trailing period, created using `FORMAT(DIM_DATE[Reporting Period], "mmm") & "."`. |
+| Month Name | Month-name label. |
+| Month Number | Month-number attribute used for ordering or grouping. |
+| Quarter | Calendar-quarter attribute. |
+| Year | Calendar year. |
+| Year Rank | Attribute used by measures to select the current reporting year with `"1"` and the prior reporting year with `"2"`. |
+| YearMonth | Period key used in the model. |
+
+The measure definitions document how Year Rank is used. The date-table generation expression, rank-generation expression, and exact relationship endpoints are not included in the DAX measure file.
+
+Creating a date table from minimum and maximum dates establishes its boundaries. It does not, by itself, establish the table's daily or monthly granularity or its marked-date-table configuration.
 
 ## DIM_MANAGERS
 
-| Field | Meaning |
+The manager dimension supports manager filtering and personalized report content.
+
+| Field | Definition |
 |---|---|
-| Manager ID | Intended unique manager key. |
-| Manager Name, First Name, Last Name | Display and greeting fields. |
-| Territory | Source examples combine segment and country (e.g. Channel Partners–Canada). |
-| Image URL | Course-supplied hosted image used in report personalization. |
+| Manager ID | Manager identifier used in the model relationship and selection-dependent formatting. |
+| Manager Name | Full manager name. |
+| First Name | First name used by the welcome and help messages. |
+| Last Name | Manager surname. |
+| Territory | Assigned territory. Source examples combine customer segment and country. |
+| Image URL | Hosted manager image used in the report. |
+
+Manager names, territory assignments, and image URLs were supplied with the course materials.
 
 ## Utility tables
 
-`LAST_REFRESHED[Date Last Refreshed]` stores a refresh value. Its generation process is not provided. `*Measures` organizes calculations; it is not a business fact table.
+| Table | Purpose |
+|---|---|
+| LAST_REFRESHED | Stores the `Date Last Refreshed` value used by the refresh label. |
+| *Measures | Organizes the report's measures. |
+
+The refresh-label expression expects a single distinct refresh value in the current filter context. The process that generates this value is separate from the display measure.
 
 ## Measures
 
-| Measure / concept | Definition and caveat |
+The following 24 definitions match the supplied expressions in [Measures.DAX](Dax%20Measures/Measures.DAX).
+
+### Core measures
+
+| Measure | Definition |
 |---|---|
-| M_Units Sold | SUM of Units Sold. |
-| M_Gross Sales | SUM of Gross Sales. |
-| M_Discounts | SUM of Discounts. |
-| M_Net Sales | Intended gross sales minus discounts; export references unprefixed measures not defined in that file. |
-| M_Cost OF Goods | SUM of COGs, using the export's spelling. |
-| M_Profit | Intended net sales minus COGs; export references unresolved unprefixed names. This is profit after cost of goods, not verified net income. |
-| M_Profit Margin | Profit / Net Sales; exported IFERROR returns 0 on errors. The initial definition includes a trailing space in its name. |
-| M_# of Distinct Countries / Segments | DISTINCTCOUNT of corresponding fact attribute in filter context. |
-| M_Profit CY / PY | Profit filtered by Year Rank "1" / "2". |
-| M_Profit YOY% | (CY − PY) / ABS(PY), evaluated with ALL(DIM_DATE[Year]); returns 1 on error. Unequal-period comparison is unresolved. |
-| M_Units Sold CY / PY | Units filtered by the same year ranks. |
-| M_100% Minus Profit Margin | 1 − margin, with error fallback 0; a display helper, not a separate business outcome. |
-| M_Date/Time Last Refreshed | Formats VALUES of the refresh field; assumes a single value. |
-| M_Profit YOY% Formatted | Prefixes the formatted YoY result with `YOY: `. |
-| M_Profit Margin Formatted | Formats margin as a whole percentage and adds a plus sign for positive values. |
-| M_User Greeting | Builds `Welcome <first name>!` from the selected manager. |
-| M_User Greeting Help | Builds the Help-page greeting and assistance text from the selected manager. |
-| M_Welcome_All | Returns `#fff` when SELECTEDVALUE(Manager ID) is blank; otherwise returns `RGBA(255,255,255,0)`. |
-| M_Discount Band Colors | High: `#e92f42`; Medium: `#ffbe0b`; Low: `#049570`; None: `#808080`; default: `#07345F`. |
-| Transparent | Supplied expression: `[Transparent] := 0`. Returns numeric zero; the visual property using it is not included in the export. |
-| M_Transparent | Name shown in the model diagram. Whether this is the same measure as the exported Transparent needs confirmation. |
-| M_Date Selection | Reporting-period label shown in the model and report, e.g. `Sep/21 - Dec/22`. Its expression is not included in the supplied Sales Measures.DAX. |
-| Date/Time Last Refreshed | Supplied unprefixed helper: MAX of LAST_REFRESHED[Date Last Refreshed]. Separate from the formatted M_Date/Time Last Refreshed expression. |
+| M_Gross Sales | Sum of `FACT_SALES[Gross Sales]`. |
+| M_Discounts | Sum of `FACT_SALES[Discounts]`. |
+| M_Net Sales | Sum of `FACT_SALES[Sales]`. |
+| M_Cost Of Goods | Sum of `FACT_SALES[COGs]`. |
+| M_Profit | `M_Net Sales` minus `M_Cost Of Goods`. |
+| M_Profit Margin | Profit divided by net sales, with an `IFERROR` fallback of zero. |
+| M_Units Sold | Sum of `FACT_SALES[Units Sold]`. |
 
-The table includes all definitions supplied in the Sales DAX file plus the two model-visible helpers above. Formula availability is distinguished from a measure's presence in the report.
+### Coverage measures
 
+| Measure | Definition |
+|---|---|
+| M_# of Distinct Countries | Distinct count of `FACT_SALES[Country]` in the current filter context. |
+| M_# of Distinct Segments | Distinct count of `FACT_SALES[Segment]` in the current filter context. |
+
+### Time-comparison measures
+
+| Measure | Definition |
+|---|---|
+| M_Profit CY | Profit filtered to `DIM_DATE[Year Rank] = "1"`. |
+| M_Profit PY | Profit filtered to `DIM_DATE[Year Rank] = "2"`. |
+| M_Units Sold CY | Units sold filtered to `DIM_DATE[Year Rank] = "1"`. |
+| M_Units Sold PY | Units sold filtered to `DIM_DATE[Year Rank] = "2"`. |
+| M_Profit YOY% | `(CY - PY) / ABS(PY)`, evaluated with the filter on `DIM_DATE[Year]` removed. The `IFERROR` fallback is `1`. |
+
+The full dataset contains four months of 2021 and twelve months of 2022. A full-period comparison therefore does not represent equivalent annual coverage.
+
+The YoY error fallback formats as 100% if an error is caught. It is not a measured growth result. The case study does not use the displayed 236% badge as evidence of like-for-like growth.
+
+### Reporting-period and refresh labels
+
+| Measure | Definition |
+|---|---|
+| M_Date Selection | Formats the minimum and maximum selected `DIM_DATE[Reporting Period]` values as `MMM/YY - MMM/YY`. |
+| M_Date/Time Last Refreshed | Formats the single distinct refresh value as `Last Refreshed: mm.dd.yy`. |
+
+### Margin and comparison display helpers
+
+| Measure | Definition |
+|---|---|
+| M_100% Minus Profit Margin | One minus profit margin, with an error fallback of zero. |
+| M_Profit Margin Formatted | Whole-percentage text with a plus sign for positive margins. |
+| M_Profit YOY% Formatted | Formatted comparison text prefixed with `YOY: `. |
+
+Formatted measures return text for labels. The underlying numeric measures support calculations.
+
+### Manager greetings and visibility
+
+| Measure | Definition |
+|---|---|
+| M_User Greeting | Welcome message using the selected manager's first name. |
+| M_User Greeting Help | Help message using the selected manager's first name. |
+| M_Transparent | Returns `RGBA(255,255,255,0)`. |
+| M_Welcome_All | Returns `#fff` when the selected manager ID resolves to blank; otherwise returns `RGBA(255,255,255,0)`. |
+
+The greeting expressions use `SELECTEDVALUE` without a separate message for multiple or no selected first names.
+
+### Discount-band colors
+
+| Measure | Definition |
+|---|---|
+| M_Discount Band Colors | Returns a color based on the selected discount band, with a default color when no listed band resolves. |
+
+| Selection | Color |
+|---|---|
+| High | `#e92f42` |
+| Medium | `#ffbe0b` |
+| Low | `#049570` |
+| None | `#808080` |
+| Default | `#07345F` |
+
+## Documentation scope
+
+The measure definitions reflect the expressions supplied from the current Power BI model.
+
+Field descriptions draw on the supplied model information, source examples, and report documentation. They do not establish completed tests of source-row uniqueness, relationship keys, or full source-to-report reconciliation.
+
+See the [validation notes](Docs/Validation.md) for recorded checks and remaining verification scope.
