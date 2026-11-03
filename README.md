@@ -1,191 +1,78 @@
-# Sales Analysis – Power BI
+# Sales Analysis — Power BI
 
-App-like **Sales Analysis Report** built in Power BI, covering units sold, sales, discounts, costs, and profit across **time, segments, countries, products, and managers**.
+**Where are sales failing to translate into profit?**
 
-The report is designed for non-technical business users: intuitive navigation, clear KPIs, and guided exploration via drillthrough and tooltips.
+Enterprise generated $19.61 million in net sales but lost $614,546. France earned more profit than the USA despite lower sales. This report explores those differences across customer segments, countries, products, and managers.
 
----
-## 🔗 Report Access
+[Live dashboard](https://app.powerbi.com/view?r=eyJrIjoiY2YyNjkxMWYtMmEzNS00MTUzLWFhZDctNTQ2MmM4MTI1MzE0IiwidCI6ImIyZDQ1OTA3LTUwOWItNDQ5Ni05YmQzLTVhNjBjN2YwZjM4MCIsImMiOjN9) · [Data dictionary](Data_Dictionary.md) · [Model](Model/README.md) · [DAX documentation](Dax%20Measures/README.md) · [Validation notes](Docs/Validation.md)
 
-- **Live report:** [https://app.powerbi.com/view?r=eyJrIjoiY2YyNjkxMWYtMmEzNS00MTUzLWFhZDctNTQ2MmM4MTI1MzE0IiwidCI6ImIyZDQ1OTA3LTUwOWItNDQ5Ni05YmQzLTVhNjBjN2YwZjM4MCIsImMiOjN9]
+## Project scope
 
----
+- **Period:** September 2021–December 2022.
+- **Coverage:** five customer segments, five countries, and six products.
+- **Overall results:** $118.73 million in net sales and $16.89 million in profit after cost of goods.
+- **Source:** sales and manager Excel files supplied through a Udemy course.
 
-## 🎯 Business Objectives
+I built the Power BI report from a blank report, using Power Query, date and manager dimensions, DAX measures, and interactive report pages. The manager file included territory assignments and image URLs. Backgrounds, icons, logos, and themes came from the course materials.
 
-This report helps answer questions such as:
+The source files already contained sales, discount, cost, and profit fields. My report brings these fields into a model and adds measures and interactions for comparing performance. This is an educational portfolio project.
 
-- How are **Units Sold, Gross Sales, Net Sales, COGs, and Profit** trending over time?
-- Which **customer segments** and **countries** drive most sales and profit?
-- Which **products** generate the best volume and margin?
-- How does performance differ **by manager**?
-- Where do we see **margin pressure**, negative YoY change, or unusually high discounts?
+## Key findings
 
----
+Values below use the full reporting period, all managers, and no discount-band selection. Percentages are calculated from the displayed monetary totals and rounded to one decimal place.
 
-## 📊 Key KPIs
+### 1. Enterprise was the only loss-making segment
 
-Global KPI cards at the top of the main page:
+Enterprise recorded **$19,611,694 in net sales** against **$20,226,240 in cost of goods**, leaving a **$614,546 loss** and a **−3.1% margin**. The other four segments were profitable.
 
-- **Units Sold** – total quantity sold.
-- **Gross Sales** – sales before discounts.
-- **Discounts** – total discount amount granted.
-- **Net Sales** – Gross Sales minus Discounts.
-- **Cost of Goods (COGs)** – cost of goods sold.
-- **Profit** – Net Sales minus COGs.
-- **Profit Margin %** – Profit / Net Sales.
-- **Profit YoY %** – year-over-year change in profit.
-- **# of Distinct Segments / Countries** – quick sense of portfolio breadth.
+**Next action:** break Enterprise down by product, country, and discount band to locate the losses. Compare selling prices and cost of goods before recommending pricing or discount changes.
 
-All KPIs respond to slicers (date, segment, country, product, manager) and cross-filtering from other visuals.
+![Segment results, including Enterprise's loss](Docs/Screenshots/03-Sales-Analysis-Segment.png)
 
----
+### 2. France earned more profit from fewer sales than the USA
 
-## 🧭 Report Pages & Navigation
+The USA led net sales at **$25.03 million**, with **$3.00 million profit** and a **12.0% margin**. France generated **$24.35 million in net sales**, but earned **$3.78 million profit** at a **15.5% margin**—**$785,480 more profit** than the USA.
 
-The report uses an **app-like layout** with a left navigation bar and page-level buttons.
+**Next action:** compare the two countries' product mix, customer segments, and discount patterns. Sales rank alone would miss this profitability difference.
 
-### 1. Home
+![Country sales and profit comparison](Docs/Screenshots/04-Sales-Analysis-Country.png)
 
-- Hero landing page with a **Sales Analysis Report** banner.
-- Right-hand text cards summarizing:
-  - Units Sold
-  - Net Sales
-  - Cost of Goods
-  - Net Profit
-- Social icons at the bottom for a branded, “product-like” feel.
+### 3. Paseo led profit contribution, but not profit margin
 
-### 2. Sales Analysis (Main Hub)
+Paseo contributed **$4,797,438**, or **28.4% of total profit**. Its margin was **14.5%**, compared with **16.1% for Amarilla**. The largest profit contributor was therefore not the highest-margin product.
 
-Primary working area with:
+**Next action:** examine where Paseo generates its profit and where Amarilla's higher margin is sustained. Use both contribution and margin when assessing product priorities.
 
-- **Header slicer** (e.g., segment/manager selection).
-- **Top KPI cards** for all core metrics.
-- **Tabs / buttons** to focus on:
-  - Period
-  - Segment
-  - Country
-  - Product
+[View the product comparison](Docs/Screenshots/05-Sales-Analysis-Product.png)
 
-Each view shows:
+## Model and report design
 
-- 3–4 visuals (Units Sold, Net Sales, Profit, COGs) for that perspective.
-- A **detailed table** at the bottom with Units Sold, Gross Sales, Discounts, Net Sales, COGs, Profit, Profit Margin.
+Date and manager dimensions filter the sales table. Country, segment, product, and discount-band attributes support comparisons within that table.
 
-Examples:
+- **Period, Segment, Country, and Product views:** charts and aggregate tables for each perspective.
+- **Manager selection:** filters results and updates the greeting and profile image.
+- **Drill-through:** additional breakdowns for units, net sales, profit, and cost of goods.
+- **Tooltips:** compact summaries, including a period profit total and Top 5 Managers.
+- **Display measures:** reporting-period labels, refresh dates, greetings, margin formatting, and discount-band colors.
 
-- **Segment view:** performance by Government, Enterprise, Midmarket, Channel Partners, Small Business.
-- **Country view:** Canada, France, USA, Mexico, Germany comparison.
-- **Product view:** top products by volume, sales, and margin.
+See the [model diagram](Model/README.md) and [measure documentation](Dax%20Measures/README.md) for the implementation details.
 
-### 3. Manager View (via slicer)
+## Validation and limitations
 
-- Top-left “Welcome” card shows the **selected manager’s photo and name**.
-- All KPIs and visuals automatically filter to that manager.
-- Dynamic greeting using DAX (e.g., “Welcome Bob!”).
+The findings were checked against the live report and saved screenshots. Manager and discount filters, a profit tooltip, and two drill-through paths were also checked. The [validation record](Docs/Validation.md) lists the values and results.
 
-This demonstrates using a **manager dimension** and user-friendly personalization without full RLS.
+**Profit in this report means net sales minus cost of goods.** It does not include a demonstrated allowance for operating expenses or tax. The figures describe the dataset; they do not show realized business improvements or explain what caused the differences.
 
-### 4. Help Center
+The live **236% YoY badge is not used here** because the reporting period contains four months of 2021 and twelve months of 2022. A matching-month comparison is needed. Full source-data reconciliation and a complete model measure export remain outstanding; details and deferred interface improvements are recorded in the validation notes.
 
-- Dedicated **Help** page with three tiles:
-  - **Overview** – what data is in the report.
-  - **Navigation** – how to move between pages and use slicers.
-  - **How to Use** – examples of business questions to explore.
-- Written for non-technical users to reduce the need for training.
+## Repository guide
 
-### 5. Drillthrough Pages
+| File or folder | Contents |
+|---|---|
+| [Data_Dictionary.md](Data_Dictionary.md) | Fields, business definitions, and display helpers |
+| [Dax Measures](Dax%20Measures/README.md) | Original expressions, dependencies, and proposed corrections |
+| [Model](Model/README.md) | Relationship diagram and model explanation |
+| [Validation](Docs/Validation.md) | Completed checks and remaining work |
+| Docs/Screenshots | Report pages, detail views, and tooltips |
 
-From visuals on the Sales Analysis page, users can **right-click → Drill through** to detailed pages for:
-
-- Units Sold
-- Net Sales
-- Net Profit
-- Cost of Goods
-
-Each drillthrough page contains row-level detail and extra breakdowns (e.g., by product or manager) to explain anomalies seen in the summary view.
-
-### 6. Tooltip Pages
-
-Custom tooltip pages for key metrics:
-
-- Units Sold – Tooltip  
-- Net Sales – Tooltip  
-- Net Profit – Tooltip  
-- Cost of Goods – Tooltip  
-
-Tooltips are styled to match the main theme and provide **extra context on hover** without leaving the page.
-
----
-
-## 🧱 Data Model (Star Schema)
-
-The model uses a clean star schema with one fact table, two dimensions, and one utility table.
-
-**Fact table**
-
-- **`FACT_SALES`** – grain: *order line*  
-  - Measures and columns for sales, discounts, COGs, profit, discount bands, and YearMonth.
-  - Foreign keys to `DIM_DATE` and `DIM_MANAGERS`.
-
-**Dimensions**
-
-- **`DIM_DATE`**
-  - Standard calendar attributes: Year, Quarter, Month, Month (Short), YearMonth.
-  - **Reporting Period** and **Year Rank** (e.g., 1 = Current Year, 2 = Prior Year) to simplify CY/PY logic.
-
-- **`DIM_MANAGERS`**
-  - Manager ID, Manager Name, First Name, Last Name.
-  - Territory (region / country responsibility).
-  - Image URL used to display manager photos inside the report.
-
-**Utility**
-
-- **`LAST_REFRESHED`**
-  - Single column table holding **Date Last Refreshed** for displaying the data refresh timestamp.
-
-👉 For full column-level details, see **`Data_Dictionary.md`** in this repository.
-
----
-
-## 🧮 DAX Highlights
-
-All measures are stored in a dedicated **`*Measures`** table for cleanliness.
-
-Core measure groups include:
-
-- **Sales & Profit**
-  - `M_Units Sold`
-  - `M_Gross Sales`
-  - `M_Discounts`
-  - `M_Net Sales`
-  - `M_Cost Of Goods`
-  - `M_Profit`
-  - `M_Profit Margin` and formatted variants
-- **Time Intelligence**
-  - `M_Profit CY`, `M_Profit PY`, `M_Profit YOY%`
-  - `M_Units Sold CY`, `M_Units Sold PY`
-  - Implemented using `DIM_DATE[Year Rank]` instead of hard-coded years.
-- **Profile KPIs**
-  - `M_# of Distinct Countries`
-  - `M_# of Distinct Segments`
-- **Cosmetic / UX Helpers**
-  - `M_Date/Time Last Refreshed` – text-friendly refresh stamp.
-  - `M_Transparent` – used to control visibility/overlay.
-  - `M_User Greeting`, `M_User Greeting Help`, `M_Welcome_All` – personalized greeting and background behavior based on selected manager.
-  - `M_Discount Band Colors` – returns hex codes based on discount band (High, Medium, Low, None) for consistent color rules.
-
-Example (simplified) YOY logic:
-
-```DAX
-M_Profit CY =
-CALCULATE ( [M_Profit], DIM_DATE[Year Rank] = "1" )
-
-M_Profit PY =
-CALCULATE ( [M_Profit], DIM_DATE[Year Rank] = "2" )
-
-M_Profit YOY% =
-IFERROR (
-    ([M_Profit CY] - [M_Profit PY]) / ABS ( [M_Profit PY] ),
-    1
-)
+This repository contains documentation, DAX expressions, and screenshots. The source workbooks and Power BI file are not included.
