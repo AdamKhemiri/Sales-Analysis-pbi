@@ -49,7 +49,7 @@ Displayed gross sales minus discounts is $1 higher than displayed net sales:
 
 `$127,931,599 − $9,205,248 = $118,726,351`
 
-Independent rounding of displayed amounts could explain this difference. The underlying unrounded amounts have not been reconciled, so the cause is not confirmed.
+The November 24 check summed the 700 sales rows in the original course workbook before rounding: gross sales of $127,931,598.50 minus discounts of $9,205,248.24 equals $118,726,350.26 in net sales. Subtracting $101,832,648.00 in cost of goods yields $16,893,702.26 in gross profit. Independent whole-dollar rounding explains the $1 display difference. All 25 manager IDs were unique in the manager table, and every sales row matched a manager.
 
 ## Arithmetic supporting the case study
 
@@ -125,7 +125,14 @@ The full-period 236% badge recorded in the earlier review is excluded from the c
 
 The error fallback formats as 100% if an error is caught. That fallback is not a measured growth result.
 
-A like-for-like growth claim requires confirmed date coverage and equivalent periods. For this dataset, September–December in both years provides a candidate comparison window, subject to checking data completeness and filter behavior.
+The workbook contains each month from September 2021 through December 2022. Summing the same four calendar months in each year across all managers and discount bands gives:
+
+| September–December | 2021 | 2022 | Change |
+|---|---:|---:|---:|
+| Net sales | $26,415,255.51 | $36,157,519.26 | +36.9% |
+| Gross profit | $3,878,464.51 | $5,435,484.26 | +40.1% |
+
+These are matched-period workbook results. The existing full-period dashboard badge covers a different date range.
 
 ## Remaining verification scope
 

@@ -2,7 +2,7 @@
 
 **Where are sales failing to translate into profit?**
 
-Enterprise generated $19.61 million in net sales but lost $614,546. France earned more profit than the USA despite lower sales. This report explores those differences across customer segments, countries, products, and managers.
+Enterprise generated $19.61 million in net sales and a **$614,546 gross loss**. France earned **$785,480 more gross profit** than the U.S. on lower sales. These results identify where a sales manager could investigate product mix and discounts before changing pricing.
 
 [Live dashboard](https://app.powerbi.com/view?r=eyJrIjoiY2YyNjkxMWYtMmEzNS00MTUzLWFhZDctNTQ2MmM4MTI1MzE0IiwidCI6ImIyZDQ1OTA3LTUwOWItNDQ5Ni05YmQzLTVhNjBjN2YwZjM4MCIsImMiOjN9) · [Data dictionary](Data_Dictionary.md) · [Model](Model/README.md) · [DAX documentation](Dax%20Measures/README.md) · [Validation notes](Docs/Validation.md)
 
@@ -68,9 +68,9 @@ The recorded review checked findings against the published report and saved scre
 
 **Profit in this report means net sales minus cost of goods.** Operating expenses and tax are outside this calculation.
 
-The reporting period contains four months of 2021 and twelve months of 2022. The displayed **236% YoY badge is excluded from the findings** because it has not been established as a comparison of equivalent periods.
+The report contains four months of 2021 and twelve months of 2022. For a comparable period, I summed September through December in both years from the course workbook. **Net sales rose 36.9% and gross profit rose 40.1%.** The report’s 236% badge compares unequal periods. [Source arithmetic and filter scope](Docs/Validation.md#time-comparison-interpretation)
 
-The repository's DAX documentation reflects the current measure expressions supplied from Power BI. Full source-to-report reconciliation and independent execution testing against the PBIX are outside the recorded review scope.
+The source check covered the 700 sales records, reporting months, manager keys, financial totals, and selected comparisons. The [validation notes](Docs/Validation.md) detail the remaining DAX and interaction checks.
 
 The findings describe the dataset. Recommendations are proposed follow-up analyses; they do not represent implemented business actions, proven causes, or realized business improvements.
 
