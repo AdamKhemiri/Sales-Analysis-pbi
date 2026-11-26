@@ -2,7 +2,7 @@
 
 ![Sales model diagram](Schema.png.png)
 
-The supplied diagram shows two active one-to-many, single-direction relationships: DIM_DATE → FACT_SALES and DIM_MANAGERS → FACT_SALES. The arrows point from each dimension toward the fact table. LAST_REFRESHED and *Measures appear disconnected.
+The diagram shows two active one-to-many relationships. DIM_DATE and DIM_MANAGERS each filter FACT_SALES in one direction. LAST_REFRESHED and the measures table appear disconnected.
 
 Manager ID and YearMonth are the apparent relationship keys in the diagram. The course workbook contains 25 unique manager IDs, and all 700 sales rows match a manager. The diagram does not expose the exact relationship endpoint properties.
 

@@ -46,7 +46,7 @@ Amounts are displayed with a dollar symbol. A specific currency code is not esta
 
 ## DIM_DATE
 
-The report author created the date table using the minimum and maximum dates. It provides reporting-period labels and attributes for filtering and time comparisons.
+The date table spans the minimum and maximum reporting dates. Its labels and attributes support period filtering and time comparisons.
 
 The dataset covers September 2021–December 2022.
 
@@ -91,7 +91,7 @@ The refresh-label expression expects a single distinct refresh value in the curr
 
 ## Measures
 
-The following 24 definitions match the supplied expressions in [Measures.DAX](Dax%20Measures/Measures.DAX).
+The following 24 definitions correspond to the model expressions in [Measures.DAX](Dax%20Measures/Measures.DAX).
 
 ### Core measures
 
@@ -170,8 +170,4 @@ The greeting expressions use `SELECTEDVALUE` without a separate message for mult
 
 ## Documentation scope
 
-The measure definitions reflect the expressions supplied from the current Power BI model.
-
-Field descriptions draw on the supplied model information, source examples, and report documentation. They do not establish completed tests of source-row uniqueness, relationship keys, or full source-to-report reconciliation.
-
-See the [validation notes](Docs/Validation.md) for recorded checks and remaining verification scope.
+The source checks reconcile the financial totals and confirm that all 700 sales rows match one of 25 unique manager keys. The uniqueness of a sales record across its business attributes and the exact date relationship still require separate checks. [Source checks and model limits](Docs/Validation.md)

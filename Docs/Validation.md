@@ -1,20 +1,17 @@
 # Sales validation notes
 
-This document records the evidence supporting the Sales Analysis case study, the scope of the checks performed, and relevant interpretation limits.
+The course workbook reconciles to $118.73 million in net sales and $16.89 million in gross profit. This page gives the unrounded figures, matched-period growth calculation and results from testing the report.
 
 [Project overview](../README.md) · [Data dictionary](../Data_Dictionary.md) · [DAX documentation](../Dax%20Measures/README.md) · [Model explanation](../Model/README.md)
 
-## Review scope
+## Evidence and dates
 
-The November 2, 2026 review recorded checks against the published report, supplied source screenshots, saved report screenshots, model diagram, and available DAX documentation.
-
-The November 3, 2026 documentation review incorporated the current measure expressions supplied by the report author and checked the saved Product screenshot against the documented product figures.
-
-The November 3 update did not repeat the earlier live interaction checks. No PBIX or complete source workbook was inspected during these reviews.
+- November 2–3, 2026. Live report interactions, saved screenshots, model diagram and 24 DAX definitions.
+- November 24, 2026. The original course workbook provided the 700 sales rows and 25 manager records used to check totals, keys and like-for-like growth.
 
 ## Displayed findings
 
-The November 2 review recorded the following reporting context:
+The figures below use these selections in the published report.
 
 - Period: September 2021–December 2022.
 - Manager selection: All.
@@ -69,13 +66,11 @@ The [saved Product screenshot](Screenshots/05-Sales-Analysis-Product.png) suppor
 
 The report displays margins rounded to whole percentages. The case study uses ratios calculated from monetary totals to provide one-decimal precision.
 
-The earlier documentation stated Amarilla's margin as 16.1%. This was corrected to 15.9% after checking the recorded amounts against the saved screenshot. This correction changes the documentation, not the report's calculations.
-
 Recommendations in the case study are proposed follow-up analyses, not implemented business actions or measured business improvements.
 
 ## Recorded interaction checks
 
-The following results were recorded during the November 2, 2026 review.
+These interactions were tested in the published report on November 2, 2026.
 
 | Check | Recorded result |
 |---|---|
@@ -94,21 +89,15 @@ Net Sales and Cost of Goods detail pages and the remaining tooltips were not ind
 
 Saved screenshots document particular report states; they do not establish that every live interaction has been tested.
 
-## DAX documentation alignment
+## DAX behind the displayed figures
 
-The updated DAX reference contains the 24 measure definitions supplied from the current Power BI model.
-
-These definitions resolve the earlier documentation discrepancies:
+The [24 measure definitions](../Dax%20Measures/Measures.DAX) include the following calculations.
 
 - `M_Net Sales` sums `FACT_SALES[Sales]`.
 - `M_Profit` references `M_Net Sales` and `M_Cost Of Goods`.
 - `M_Profit Margin` uses a consistent measure name.
 - `M_Date Selection` uses the minimum and maximum selected `DIM_DATE[Reporting Period]` values.
 - `M_Transparent` returns `RGBA(255,255,255,0)`.
-
-The expressions were grouped and formatted for readability without changing their calculation behavior.
-
-This alignment updates the repository's description of the measures. It does not constitute independent execution testing against the PBIX or a change to the published report.
 
 ## Time-comparison interpretation
 
@@ -121,7 +110,7 @@ The current profit comparison:
 - Removes the filter on `DIM_DATE[Year]`.
 - Uses an `IFERROR` fallback of `1`.
 
-The full-period 236% badge recorded in the earlier review is excluded from the case-study findings because it has not been established as a comparison of equivalent reporting periods.
+The full-period 236% badge compares twelve months of 2022 with four months of 2021.
 
 The error fallback formats as 100% if an error is caught. That fallback is not a measured growth result.
 
@@ -136,20 +125,18 @@ These are matched-period workbook results. The existing full-period dashboard ba
 
 ## Remaining verification scope
 
-The reviews do not establish completion of the following checks:
-
-| Area | Verification not established |
+| Area | Remaining check |
 |---|---|
-| Source reconciliation | Agreement between complete source workbooks, transformed data, and report totals using unrounded amounts. |
+| Source reconciliation | The headline monetary totals reconcile to the workbook. Transformed rows and every report filter combination have yet to be reconciled individually. |
 | Sales-record grain | Uniqueness of the proposed combination of reporting period and business attributes. |
-| Relationships | Exact relationship endpoints, dimension-key uniqueness, and unmatched fact-table keys. |
+| Relationships | Manager keys are unique and every sales row matches. Date-key coverage and the relationship properties inside the model remain unverified. |
 | Data quality | Complete duplicate, missing-value, and invalid-value checks. |
 | Date logic | Exact date-table generation, year-rank generation, and behavior under different date selections. |
 | Calculation edge cases | Results for zero, missing, or negative comparison denominators and multiple refresh values. |
 | Report interactions | Untested detail pages, tooltips, export behavior, and mobile layout. |
 | Security | Any row-level security configuration or access-control implementation. |
 
-The report author states that the date table was created using minimum and maximum dates. Its full generation expression was not included in this review.
+The date table uses the minimum and maximum reporting dates. The repository documents its reporting fields and year-rank measures.
 
 ## Business interpretation
 

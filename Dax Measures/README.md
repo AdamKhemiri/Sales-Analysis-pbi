@@ -1,6 +1,6 @@
 # Sales DAX documentation
 
-[Measures.DAX](Measures.DAX) contains the measure definitions supplied from the Sales Analysis Power BI model, grouped by reporting purpose.
+[Measures.DAX](Measures.DAX) contains the 24 measure definitions from the Sales Analysis Power BI model, grouped by reporting purpose.
 
 The `M_` prefix is the project's measure-naming convention. The file presents individual Power BI measure definitions for reference.
 

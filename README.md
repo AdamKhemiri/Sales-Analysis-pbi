@@ -4,6 +4,8 @@
 
 Enterprise generated $19.61 million in net sales and a **$614,546 gross loss**. France earned **$785,480 more gross profit** than the U.S. on lower sales. These results identify where a sales manager could investigate product mix and discounts before changing pricing.
 
+**Reading the growth badge.** The dashboard shows 236% gross profit growth across twelve months of 2022 and four months of 2021. Comparing September–December in both years gives **40.1% gross profit growth** and **36.9% net sales growth**. [Matched-period calculation](Docs/Validation.md#time-comparison-interpretation)
+
 [Live dashboard](https://app.powerbi.com/view?r=eyJrIjoiY2YyNjkxMWYtMmEzNS00MTUzLWFhZDctNTQ2MmM4MTI1MzE0IiwidCI6ImIyZDQ1OTA3LTUwOWItNDQ5Ni05YmQzLTVhNjBjN2YwZjM4MCIsImMiOjN9) · [Data dictionary](Data_Dictionary.md) · [Model](Model/README.md) · [DAX documentation](Dax%20Measures/README.md) · [Validation notes](Docs/Validation.md)
 
 ## Project scope
@@ -64,13 +66,9 @@ See the [model explanation](Model/README.md) and [DAX documentation](Dax%20Measu
 
 ## Validation and limitations
 
-The recorded review checked findings against the published report and saved screenshots. It also checked manager and discount filters, a profit tooltip, and two drill-through paths. The [validation notes](Docs/Validation.md) distinguish completed checks, observed interaction behavior, and areas not tested.
+The financial checks cover all 700 sales rows, all 25 manager keys and both years' September–December totals. Checks of the published report cover manager and discount filters, a profit tooltip, and two drill-through paths. [Source figures and interaction results](Docs/Validation.md)
 
 **Profit in this report means net sales minus cost of goods.** Operating expenses and tax are outside this calculation.
-
-The report contains four months of 2021 and twelve months of 2022. For a comparable period, I summed September through December in both years from the course workbook. **Net sales rose 36.9% and gross profit rose 40.1%.** The report’s 236% badge compares unequal periods. [Source arithmetic and filter scope](Docs/Validation.md#time-comparison-interpretation)
-
-The source check covered the 700 sales records, reporting months, manager keys, financial totals, and selected comparisons. The [validation notes](Docs/Validation.md) detail the remaining DAX and interaction checks.
 
 The findings describe the dataset. Recommendations are proposed follow-up analyses; they do not represent implemented business actions, proven causes, or realized business improvements.
 
